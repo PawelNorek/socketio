@@ -10,12 +10,17 @@ async def index(request):
     return web.Response(text=f.read(), content_type='text/html')
 
 @sio.event
-def connect(sid, environ):
+async def connect(sid, environ):
   print(sid, 'connected')
 
 @sio.event
-def disconnect(sid):
+async def disconnect(sid):
   print(sid, 'disconnected')
+
+@sio.event
+async def sum(sid, data):
+  result = data['numbers'][0] + data['numbers'][1]
+  await sio.emit('sum_result', {'result': result}, to=sid)
 
 app.router.add_static('/public', 'public')
 app.router.add_get('/', index)

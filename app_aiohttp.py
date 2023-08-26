@@ -30,11 +30,15 @@ async def connect(sid, environ):
   print('username: ', username)
   if not username:
     return False
+  
+  await sio.save_session(sid, {'username': username})
+  # with sio.session(sid) as session:
+    # session['username'] = username
 
-  with sio.session(sid) as session:
-    session['username'] = username
+  # sio.session(sid)['username'] = username
 
-  sio.emit('user_joined', username)
+
+  await sio.emit('user_joined', username)
 
   client_count += 1
   print(sid, 'connected')
@@ -64,6 +68,8 @@ async def disconnect(sid):
     b_count -= 1
     await sio.emit('room_count', b_count, to='b')
 
+  session = await sio.get_session(sid)
+  await sio.emit('user_left', session['username'])
 
 @sio.event
 async def sum(sid, data):

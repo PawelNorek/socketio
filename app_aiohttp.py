@@ -25,6 +25,17 @@ async def connect(sid, environ):
   global client_count
   global a_count
   global b_count
+
+  username = environ.get('HTTP_X_USERNAME')
+  print('username: ', username)
+  if not username:
+    return False
+
+  with sio.session(sid) as session:
+    session['username'] = username
+
+  sio.emit('user_joined', username)
+
   client_count += 1
   print(sid, 'connected')
   sio.start_background_task(task, sid)  
@@ -52,6 +63,7 @@ async def disconnect(sid):
   else:
     b_count -= 1
     await sio.emit('room_count', b_count, to='b')
+
 
 @sio.event
 async def sum(sid, data):

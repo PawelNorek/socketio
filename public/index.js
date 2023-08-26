@@ -23,3 +23,7 @@ sio.on('mult', (data, cb) => {
 sio.on('client_count', data => {
 	console.log(data)
 })
+
+sio.on('room_count', count => {
+	console.log('Thera are ', count, ' clients in my room.')
+})
